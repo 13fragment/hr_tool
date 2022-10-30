@@ -1,0 +1,11 @@
+from aiogram import Dispatcher,executor,types,Bot
+# from aiogram.types import KeyboardButton так импортируются отдельные типы, например тип с кнопкой 
+# import logging библиотечка с логами, для дальнейшего релиза будет полезна
+API_TOKEN ='5727921189:AAHSWpPnpEWgjJYRVsEUzBGhi_HgTF8Kit8'
+bot = Bot(token=API_TOKEN)
+dp = Dispatcher(bot)
+@dp.message_handler()
+async def send_welcome(message:types.Message):
+    await message.reply(message.text)
+if __name__ == '__main__':
+    executor.start_polling(dp, skip_updates=True)
