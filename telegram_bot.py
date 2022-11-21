@@ -37,17 +37,11 @@ async def help_command(message:types.Message):
 async def create_mp(message:types.Message):
     await message.answer('Введите название мероприятия')
     @dp.message_handler()
-    def s(message:types.Message):
-        global a
-        a = message.text
-        print(a)
-
-
-@dp.message_handler(text=a)
-async def create_mp(message:types.Message):
-    await message.answer('Введите дату')
-
-
+    async def get_mp_name(message:types.Message):
+        global nameMP
+        nameMP = message.text
+        print(nameMP)
+        await message.answer('Введите дату мероприятия')
 
 
 
