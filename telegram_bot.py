@@ -26,12 +26,26 @@ keyboard_mp = ReplyKeyboardMarkup (keyboard=[
 async def greeting(message:types.Message):
     await bot.send_message(chat_id=message.from_user.id, text = data,parse_mode="HTML",reply_markup=keyboard_mp)
     await message.delete()
-    if message.text == 'Сгенерировать мероприятие':
-       await message.reply('ok')
+
 
 @dp.message_handler(commands=['help','помощь'])
 async def help_command(message:types.Message):
     await message.reply('Связь с тех поддержкой: @mgo1ubev')
+
+
+@dp.message_handler(text='Создать мероприятие')
+async def create_mp(message:types.Message):
+    await message.answer('Введите название мероприятия')
+    @dp.message_handler()
+    def s(message:types.Message):
+        global a
+        a = message.text
+        print(a)
+
+
+@dp.message_handler(text=a)
+async def create_mp(message:types.Message):
+    await message.answer('Введите дату')
 
 
 
