@@ -7,7 +7,7 @@ from aiogram.dispatcher import FSMContext
 # import logging библиотечка с логами, для дальнейшего релиза будет полезна
 API_TOKEN ='5727921189:AAHSWpPnpEWgjJYRVsEUzBGhi_HgTF8Kit8'
 
-SALE_OTDEL = '-1001897526525'
+SALE_OTDEL = '-1001295882228'
 ANALITICS = '-1001899403427'
 TEH = '-1001704512557'
 
@@ -119,7 +119,7 @@ async def photo_mp(message:types.Message,state: FSMContext):
         + data['date']+ '\n'
         + data['time']+ '\n'
         + data['place'])
-        await message.reply('Все верно?')
+        # await message.reply('Все верно?')
         
         if data['otdel'] == ('Аналитика' or 'аналитика'):
             async with state.proxy() as data:
@@ -145,7 +145,7 @@ async def photo_mp(message:types.Message,state: FSMContext):
                 + data['place'])
 
 
-        elif data['otdel'] == ('Отедл продаж' or 'отдел продаж'):
+        elif data['otdel'] == ('Отдел продаж' or 'отдел продаж'):
             async with state.proxy() as data:
                 await bot.send_photo(chat_id=SALE_OTDEL,
                 photo=data['photo'],
