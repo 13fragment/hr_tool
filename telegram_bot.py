@@ -12,6 +12,9 @@ SALE_OTDEL = '-1001295882228'
 ANALITICS = '-1001899403427'
 TEH = '-1001704512557'
 
+LOGIN = 'admin'
+PASS = '1234'
+
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, storage=MemoryStorage())
 
@@ -60,6 +63,8 @@ commands_welcome = ['start','начать','Начать', 'НАЧАТЬ','Start
 if text != None:
     welcome_text = text.read()
     
+keyboard_login = ReplyKeyboardMarkup(keyboard = [[KeyboardButton('Авторизация')]],
+resize_keyboard=True,one_time_keyboard=True)
 
 keyboard_mp = ReplyKeyboardMarkup (keyboard = [
     [
@@ -83,16 +88,47 @@ class MpStatesGroup(StatesGroup):
     confirm = State()
     photo = State()
 
+class Admin(StatesGroup):
+    login = State()
+    password = State()
+
+
 @dp.message_handler (commands=['start'])
 async def greeting(message:types.Message):
-    await message.answer(text=welcome_text,reply_markup=keyboard_mp,parse_mode='HTML')
-    
+    await message.answer(text=welcome_text,reply_markup=keyboard_login,parse_mode='HTML')
+    await message.answer('Для начала необходимо авторизоваться')
+
+@dp.message_handler(Text(equals='Авторизация', ignore_case=True), state=None)
+async def greeting(message:types.Message):
+    await Admin.login.set()
+    await message.reply('Введите логин')
+
+@dp.message_handler(state=Admin.login)
+async def a_login(message:types.Message,state: FSMContext):
+    async with state.proxy() as data:
+        data['login'] = message.text
+    if data['login'] == LOGIN:
+        await Admin.next()
+        await message.reply('Введите пароль')
+    else:
+        await message.answer('Неверный логин, доступ запрещен!')
+        await state.finish()
+
+@dp.message_handler(state=Admin.password)
+async def a_password(message:types.Message,state: FSMContext):
+    async with state.proxy() as data:
+        data['password'] = message.text
+    if data['password'] == PASS:
+        await state.finish()
+        await message.reply('Авторизация выполнена успешно!',reply_markup=keyboard_mp)
+    else:
+        await message.answer('Неверный пароль, доступ запрещен!')
+        await state.finish()
 
 @dp.message_handler(Text(equals='Создать мероприятие', ignore_case=True), state=None)
 async def greeting(message:types.Message):
     await MpStatesGroup.name.set()
     await message.reply('Введите название мероприятия')
-
 
 @dp.message_handler(state=MpStatesGroup.name)
 async def name_mp(message:types.Message,state: FSMContext):
