@@ -96,9 +96,18 @@ async def place_mp(message:types.Message,state: FSMContext):
 async def photo_mp(message:types.Message,state: FSMContext):
     async with state.proxy() as data:
         data['photo'] = message.photo[0].file_id
-        print(data)
         await state.finish()
-    
+    async with state.proxy() as data:
+        await bot.send_photo(chat_id=message.from_user.id,
+        photo=data['photo'],
+        caption = data['name'] + '\n' + '\n'
+        + data['description']+ '\n'
+        + data['tags']+ '\n'
+        + data['date']+ '\n'
+        + data['time']+ '\n'
+        + data['place'])
+       
+        await message.answer('Мероприятие успешно создано!')
     
 @dp.message_handler(commands=['help','помощь'])
 async def help_command(message:types.Message):
