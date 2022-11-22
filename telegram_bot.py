@@ -41,8 +41,8 @@ class MpStatesGroup(StatesGroup):
     time = State()
     place = State()
     otdel = State()
-    photo = State()
     confirm = State()
+    photo = State()
 
 @dp.message_handler (commands=['start'])
 async def greeting(message:types.Message):
@@ -102,8 +102,26 @@ async def place_mp(message:types.Message,state: FSMContext):
 async def otdel(message:types.Message,state: FSMContext):
     async with state.proxy() as data:
         data['otdel'] = message.text
+    await message.answer('Все верно?')
+    await bot.send_message(chat_id=message.from_user.id,
+        text= data['name'] + '\n' + '\n'
+        + data['description']+ '\n'
+        + data['tags']+ '\n'
+        + data['date']+ '\n'
+        + data['time']+ '\n'
+        + data['place'])
     await MpStatesGroup.next()
-    await message.reply('Добавьте фото')
+
+@dp.message_handler(state=MpStatesGroup.confirm)
+async def confirm(message:types.Message,state: FSMContext):
+    async with state.proxy() as data:
+        data['confirm'] = message.text
+    if data['confirm'] == ('Да' or 'да'):
+        await message.reply('Остался последний шаг: добавьте фото')
+    else:
+        await state.finish()
+        await message.answer('<em>Мероприятие будет создано заново</em>'+'<b>\nВведите название мероприятия</b>',parse_mode='HTML')
+    await MpStatesGroup.next()
 
 @dp.message_handler(content_types = ['photo'],state=MpStatesGroup.photo)
 async def photo_mp(message:types.Message,state: FSMContext):
