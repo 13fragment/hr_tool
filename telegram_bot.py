@@ -4,19 +4,54 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher.filters.state import StatesGroup,State
 from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher import FSMContext
+import random
+import datetime
 # import logging библиотечка с логами, для дальнейшего релиза будет полезна
 API_TOKEN ='5727921189:AAHSWpPnpEWgjJYRVsEUzBGhi_HgTF8Kit8'
-
 SALE_OTDEL = '-1001295882228'
 ANALITICS = '-1001899403427'
 TEH = '-1001704512557'
 
-
-LOGIN = 'admin'
-PASS = '1234'
-
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, storage=MemoryStorage())
+
+
+
+
+# Мероприятия предустановленные
+def rand_event():
+    event_id = random.randint(0,2)
+    
+ 
+    current_time = datetime.datetime.today()
+    event_time = random.randint(0,14)
+    if event_id == 0:
+        name = "Кинотимбилдинг"
+        description = "В основу положена актёрская игра,продуманный сценарий и другие обязательные составляющие киноиндустрии. Фантазия о главной роли в оскароносном фильме посещала каждого хоть единожды – именно она и подтолкнула к освещению этого мероприятие. Вы сможете попробовать себя в роли актёра, сыграв небольшие сценки с такими же творческими личностями, как вы! "
+        tags = "#Event #Chill"
+        date = "Дата мероприятия: " + str(event_time) + "/" + str(current_time.month + 1)
+        time = random.randint(9,20)
+        place = "Место встречи будет оглашено позже"
+        photo = "kinoteambuilding.jpg"
+    elif event_id == 1:
+        name = "Офисная фотоохота"
+        description = "Задача команды – найти и сфотографировать череду каких-либо объектов или предметов, находящийся в офисе. Выигрывает команда, подготовивший фотоотчет быстрее и в нужной последовательности.Игра по указанному сценарию развивает пространственное мышление, память и позволяет лучше узнать рабочее пространство."
+        tags = "#Event #Chill"
+        date = "Дата мероприятия: " + str(event_time) + "/" + str(current_time.month + 1)
+        time = random.randint(9,20)
+        place = "Место встречи будет оглашено позже"
+        photo = "fotoohota.jpg"
+    if event_id == 2:
+        name = "Войти в историю компании"
+        description = "Сотрудникам предлагается не просто стать частью структуры компании, а войти в ее историю и привнести собственную лепту в развитие нового продукта фирмы. По условиям творческого тимбилдинга команда из нескольких сотрудников должна разработать собственную уникальную рецептуру продукта или создать какую-либо полезную модель, которая впоследствии станет новым витком развития бизнеса."
+        tags = "#Event #Chill"
+        date = "Дата мероприятия: " + str(event_time) + "/" + str(current_time.month + 1)
+        time = random.randint(9,20)
+        place = "Место встречи будет оглашено позже"
+        photo = "comp_history.jpg"
+    return(name + "\n" + "\n" + description + "\n"+ tags +"\n" + date + " Время: " + str(time)+ ":00" + "\n" + place)
+
+
 
 
 
@@ -25,9 +60,6 @@ commands_welcome = ['start','начать','Начать', 'НАЧАТЬ','Start
 if text != None:
     welcome_text = text.read()
     
-keyboard_login = ReplyKeyboardMarkup(keyboard = [[KeyboardButton('Авторизация')]],
-resize_keyboard=True,one_time_keyboard=True)
-
 
 keyboard_mp = ReplyKeyboardMarkup (keyboard = [
     [
@@ -51,41 +83,10 @@ class MpStatesGroup(StatesGroup):
     confirm = State()
     photo = State()
 
-class Admin(StatesGroup):
-    login = State()
-    password = State()
-
 @dp.message_handler (commands=['start'])
 async def greeting(message:types.Message):
-    await message.answer(text=welcome_text,reply_markup=keyboard_login,parse_mode='HTML')
-    await message.answer('Для начала необходимо авторизоваться')
-
-@dp.message_handler(Text(equals='Авторизация', ignore_case=True), state=None)
-async def greeting(message:types.Message):
-    await Admin.login.set()
-    await message.reply('Введите логин')
-
-@dp.message_handler(state=Admin.login)
-async def a_login(message:types.Message,state: FSMContext):
-    async with state.proxy() as data:
-        data['login'] = message.text
-    if data['login'] == LOGIN:
-        await Admin.next()
-        await message.reply('Введите пароль')
-    else:
-        await message.answer('Неверный логин, доступ запрещен!')
-        await state.finish()
-
-@dp.message_handler(state=Admin.password)
-async def a_password(message:types.Message,state: FSMContext):
-    async with state.proxy() as data:
-        data['password'] = message.text
-    if data['password'] == PASS:
-        await state.finish()
-        await message.reply('Авторизация выполнена успешно!',reply_markup=keyboard_mp)
-    else:
-        await message.answer('Неверный пароль, доступ запрещен!')
-        await state.finish()
+    await message.answer(text=welcome_text,reply_markup=keyboard_mp,parse_mode='HTML')
+    
 
 @dp.message_handler(Text(equals='Создать мероприятие', ignore_case=True), state=None)
 async def greeting(message:types.Message):
@@ -218,6 +219,9 @@ async def photo_mp(message:types.Message,state: FSMContext):
 async def help_command(message:types.Message):
     await message.reply('Связь с тех поддержкой: @mgo1ubev')
 
-
+@dp.message_handler(Text(equals='Сгенерировать мероприятие', ignore_case=True), state=None)
+async def rand_events_send(message:types.Message):
+    await bot.send_photo(chat_id=TEH, photo="https://mb-ar.ru/ckeditor/images/735-0b49c7f2cdaf75441dc84b2bd2f45a93.jpg", caption= rand_event())
+    await message.reply('Мероприятие сгенерированно')
 if __name__ == '__main__':
     executor.start_polling(dp,skip_updates='True')
