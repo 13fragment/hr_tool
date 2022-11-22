@@ -7,6 +7,9 @@ from aiogram.dispatcher import FSMContext
 # import logging библиотечка с логами, для дальнейшего релиза будет полезна
 API_TOKEN ='5727921189:AAHSWpPnpEWgjJYRVsEUzBGhi_HgTF8Kit8'
 
+SALE_OTDEL = '-1001897526525'
+ANALITICS = '-1001899403427'
+TEH = '-1001704512557'
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, storage=MemoryStorage())
@@ -37,7 +40,9 @@ class MpStatesGroup(StatesGroup):
     date = State()
     time = State()
     place = State()
+    otdel = State()
     photo = State()
+    confirm = State()
 
 @dp.message_handler (commands=['start'])
 async def greeting(message:types.Message):
@@ -90,6 +95,14 @@ async def place_mp(message:types.Message,state: FSMContext):
     async with state.proxy() as data:
         data['place'] = message.text
     await MpStatesGroup.next()
+    await message.reply('Выберите отдел')
+
+
+@dp.message_handler(state=MpStatesGroup.otdel)
+async def otdel(message:types.Message,state: FSMContext):
+    async with state.proxy() as data:
+        data['otdel'] = message.text
+    await MpStatesGroup.next()
     await message.reply('Добавьте фото')
 
 @dp.message_handler(content_types = ['photo'],state=MpStatesGroup.photo)
@@ -106,9 +119,45 @@ async def photo_mp(message:types.Message,state: FSMContext):
         + data['date']+ '\n'
         + data['time']+ '\n'
         + data['place'])
-       
+        await message.reply('Все верно?')
+        
+        if data['otdel'] == ('Аналитика' or 'аналитика'):
+            async with state.proxy() as data:
+                await bot.send_photo(chat_id=ANALITICS,
+                photo=data['photo'],
+                caption = data['name'] + '\n' + '\n'
+                + data['description']+ '\n'
+                + data['tags']+ '\n'
+                + data['date']+ '\n'
+                + data['time']+ '\n'
+                + data['place'])
+
+        
+        elif data['otdel'] == ('Технический отдел' or 'технический отдел'):
+            async with state.proxy() as data:
+                await bot.send_photo(chat_id=TEH,
+                photo=data['photo'],
+                caption = data['name'] + '\n' + '\n'
+                + data['description']+ '\n'
+                + data['tags']+ '\n'
+                + data['date']+ '\n'
+                + data['time']+ '\n'
+                + data['place'])
+
+
+        elif data['otdel'] == ('Отедл продаж' or 'отдел продаж'):
+            async with state.proxy() as data:
+                await bot.send_photo(chat_id=SALE_OTDEL,
+                photo=data['photo'],
+                caption = data['name'] + '\n' + '\n'
+                + data['description']+ '\n'
+                + data['tags']+ '\n'
+                + data['date']+ '\n'
+                + data['time']+ '\n'
+                + data['place'])
         await message.answer('Мероприятие успешно создано!')
-    
+
+
 @dp.message_handler(commands=['help','помощь'])
 async def help_command(message:types.Message):
     await message.reply('Связь с тех поддержкой: @mgo1ubev')
