@@ -6,26 +6,16 @@ from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher import FSMContext
 import random
 import datetime
-# import logging библиотечка с логами, для дальнейшего релиза будет полезна
-API_TOKEN ='5727921189:AAHSWpPnpEWgjJYRVsEUzBGhi_HgTF8Kit8'
-SALE_OTDEL = '-1001295882228'
-ANALITICS = '-1001899403427'
-TEH = '-1001704512557'
-
-LOGIN = 'admin'
-PASS = '1234'
+from config.config import API_TOKEN,ANALITICS,TEH,SALE_OTDEL,LOGIN,PASS
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, storage=MemoryStorage())
-
-
 
 
 # Мероприятия предустановленные
 def rand_event():
     event_id = random.randint(0,2)
     
- 
     current_time = datetime.datetime.today()
     event_time = random.randint(0,14)
     if event_id == 0:
