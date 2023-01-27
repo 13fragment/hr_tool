@@ -6,7 +6,7 @@ from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher import FSMContext
 import random
 import datetime
-from config.config import API_TOKEN,ANALITICS,TEH,SALE_OTDEL,LOGIN,PASS
+from config.config import API_TOKEN,LOGIN,PASS,DOC
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, storage=MemoryStorage())
@@ -38,7 +38,7 @@ class MpStatesGroup(StatesGroup):
     date = State()
     time = State()
     place = State()
-    otdel = State()
+    chat_id = State()
     confirm = State()
     photo = State()
 
@@ -124,13 +124,13 @@ async def place_mp(message:types.Message,state: FSMContext):
     async with state.proxy() as data:
         data['place'] = message.text
     await MpStatesGroup.next()
-    await message.reply('Выберите отдел')
+    await message.reply('Введите id чата')
 
 
-@dp.message_handler(state=MpStatesGroup.otdel)
+@dp.message_handler(state=MpStatesGroup.chat_id)
 async def otdel(message:types.Message,state: FSMContext):
     async with state.proxy() as data:
-        data['otdel'] = message.text
+        data['chat_id'] = message.text
     await message.answer('Все верно?')
     await bot.send_message(chat_id=message.from_user.id,
         text= data['name'] + '\n' + '\n'
@@ -157,20 +157,9 @@ async def photo_mp(message:types.Message,state: FSMContext):
     async with state.proxy() as data:
         data['photo'] = message.photo[0].file_id
         await state.finish()
+
     async with state.proxy() as data:
-        await bot.send_photo(chat_id=message.from_user.id,
-        photo=data['photo'],
-        caption = data['name'] + '\n' + '\n'
-        + data['description']+ '\n'
-        + data['tags']+ '\n'
-        + data['date']+ '\n'
-        + data['time']+ '\n'
-        + data['place'])
-        # await message.reply('Все верно?')
-        
-        if data['otdel'] == ('Аналитика' or 'аналитика'):
-            async with state.proxy() as data:
-                await bot.send_photo(chat_id=ANALITICS,
+                await bot.send_photo(chat_id=data["chat_id"],
                 photo=data['photo'],
                 caption = data['name'] + '\n' + '\n'
                 + data['description']+ '\n'
@@ -178,36 +167,12 @@ async def photo_mp(message:types.Message,state: FSMContext):
                 + data['date']+ '\n'
                 + data['time']+ '\n'
                 + data['place'])
-
-        
-        elif data['otdel'] == ('Технический отдел' or 'технический отдел'):
-            async with state.proxy() as data:
-                await bot.send_photo(chat_id=TEH,
-                photo=data['photo'],
-                caption = data['name'] + '\n' + '\n'
-                + data['description']+ '\n'
-                + data['tags']+ '\n'
-                + data['date']+ '\n'
-                + data['time']+ '\n'
-                + data['place'])
-
-
-        elif data['otdel'] == ('Отдел продаж' or 'отдел продаж'):
-            async with state.proxy() as data:
-                await bot.send_photo(chat_id=SALE_OTDEL,
-                photo=data['photo'],
-                caption = data['name'] + '\n' + '\n'
-                + data['description']+ '\n'
-                + data['tags']+ '\n'
-                + data['date']+ '\n'
-                + data['time']+ '\n'
-                + data['place'])
-        await message.answer('Мероприятие успешно создано!')
+    await message.answer('Мероприятие успешно создано!')
 
 
 @dp.message_handler(commands=['help','помощь'])
 async def help_command(message:types.Message):
-    await message.reply('Связь с тех поддержкой: @mgo1ubev')
+    await message.reply('Связь с тех поддержкой: @mgo1ubev\nДокументашка: '+ DOC)
 
 # @dp.message_handler(Text(equals='Сгенерировать мероприятие', ignore_case=True), state=None)
 # async def rand_events_send(message:types.Message):

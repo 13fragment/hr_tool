@@ -9,3 +9,6 @@ TEH = '-1001704512557'
 # admin logging
 LOGIN = 'admin'
 PASS = '1234'    
+
+#Documentation
+DOC = 'https://surf-crocus-91d.notion.site/Hr-Tool-documentation-c18605d37fce496f88a48c8ae0bb6171'
