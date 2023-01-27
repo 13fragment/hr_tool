@@ -209,9 +209,8 @@ async def photo_mp(message:types.Message,state: FSMContext):
 async def help_command(message:types.Message):
     await message.reply('Связь с тех поддержкой: @mgo1ubev')
 
-@dp.message_handler(Text(equals='Сгенерировать мероприятие', ignore_case=True), state=None)
-async def rand_events_send(message:types.Message):
-    await bot.send_photo(chat_id=TEH, photo="https://mb-ar.ru/ckeditor/images/735-0b49c7f2cdaf75441dc84b2bd2f45a93.jpg", caption= rand_event())
-    await message.reply('Мероприятие сгенерированно')
+# @dp.message_handler(Text(equals='Сгенерировать мероприятие', ignore_case=True), state=None)
+# async def rand_events_send(message:types.Message):
+#     await message.reply('Мероприятие сгенерированно')
 if __name__ == '__main__':
     executor.start_polling(dp,skip_updates='True')
